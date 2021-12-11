@@ -1,15 +1,39 @@
 import * as cdk from '@aws-cdk/core'
-// import * as sqs from '@aws-cdk/aws-sqs';
-
+import * as iam from '@aws-cdk/aws-iam'
+import * as servicecatalog from '@aws-cdk/aws-servicecatalog'
+import { CdkServiceCatalogProduct } from './cdk-servicecatalog-product'
+import { Stack } from '@aws-cdk/core'
 export class CdkServicecatalogStack extends cdk.Stack {
     constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
         super(scope, id, props)
 
-        // The code that defines your stack goes here
+        const portfolio = new servicecatalog.Portfolio(this, 'MyFirstPortfolio', {
+            displayName: 'MyFirstPortfolio',
+            providerName: 'MyTeam',
+            description: 'Portfolio for a project',
+            messageLanguage: servicecatalog.MessageLanguage.EN
+        })
 
-        // example resource
-        // const queue = new sqs.Queue(this, 'CdkServicecatalogQueue', {
-        //   visibilityTimeout: cdk.Duration.seconds(300)
-        // });
+        const role = iam.Role.fromRoleArn(
+            this,
+            'PortfolioRole',
+            `arn:aws:iam::${Stack.of(this).account}:role/Administrator`
+        )
+        portfolio.giveAccessToRole(role)
+
+        const product = new servicecatalog.CloudFormationProduct(this, 'MyFirstProduct', {
+            productName: 'My CDK Product',
+            owner: 'Product Owner',
+            productVersions: [
+                {
+                    productVersionName: 'v1',
+                    cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStack(
+                        new CdkServiceCatalogProduct(this, 'CdkServiceCatalogProduct')
+                    )
+                }
+            ]
+        })
+
+        portfolio.addProduct(product)
     }
 }
