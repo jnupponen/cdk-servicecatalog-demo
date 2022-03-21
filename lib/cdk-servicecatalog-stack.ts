@@ -1,10 +1,11 @@
-import * as cdk from '@aws-cdk/core'
-import * as iam from '@aws-cdk/aws-iam'
-import * as servicecatalog from '@aws-cdk/aws-servicecatalog'
+import * as cdk from 'aws-cdk-lib'
+import * as iam from 'aws-cdk-lib/aws-iam'
+import * as servicecatalog from '@aws-cdk/aws-servicecatalog-alpha'
 import { CdkServiceCatalogProduct } from './cdk-servicecatalog-product'
-import { Stack } from '@aws-cdk/core'
+import { Stack } from 'aws-cdk-lib'
+import { Construct } from 'constructs'
 export class CdkServicecatalogStack extends cdk.Stack {
-    constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
+    constructor(scope: Construct, id: string, props?: cdk.StackProps) {
         super(scope, id, props)
 
         const portfolio = new servicecatalog.Portfolio(this, 'MyFirstPortfolio', {
