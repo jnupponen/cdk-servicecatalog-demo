@@ -3,6 +3,7 @@
 # VARIABLES
 #env?=
 CDK_CMD=npx aws-cdk@2.x
+STACK_ID?=--all
 
 # TARGETS
 # See details at from http://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
@@ -23,14 +24,17 @@ init: ## init accountId=<accountId> env=<env>. Init ${CDK_CMD} stack to new AWS 
 synth: ## Run ${CDK_CMD} synth.
 	npm run build \
 		&& ${CDK_CMD} synth \
+		${STACK_ID} \
 		--context environment=${env}
 
 diff: ## Check modifications before deploy.
 	npm run build \
 		&& ${CDK_CMD} synth \
+		${STACK_ID} \
 		--context environment=${env} \
 		&& aws-vault exec ${env} \
 		-- ${CDK_CMD} diff \
+		${STACK_ID} \
 		--context environment=${env} \
 
 deploy: ## Deploy to env=<env>.
@@ -39,6 +43,6 @@ deploy: ## Deploy to env=<env>.
 		--context environment=${env} \
 		&& aws-vault exec ${env} \
 		-- ${CDK_CMD} deploy \
-		--all \
+		${STACK_ID} \
 		--require-approval never \
 		--context environment=${env}
